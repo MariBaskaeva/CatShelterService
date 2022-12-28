@@ -3,6 +3,7 @@ package com.example.catshelterservice.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.util.*;
@@ -13,17 +14,23 @@ import java.util.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class Cat {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NonNull
     private String name;
+    @NonNull
     private Integer age;
+    @NonNull
     private String color;
+    @NonNull
     private String sex;
+    @NonNull
     private String vaccinations;
+    @NonNull
     private String description;
-    private String imagePath;
     @ManyToMany(cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<User> users = new HashSet<>();

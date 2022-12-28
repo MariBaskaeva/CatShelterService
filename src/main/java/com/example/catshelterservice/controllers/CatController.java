@@ -1,10 +1,13 @@
 package com.example.catshelterservice.controllers;
 
+import com.example.catshelterservice.dto.CatCreateDTO;
 import com.example.catshelterservice.dto.CatDTO;
+import com.example.catshelterservice.exceptions.FailedSavingException;
 import com.example.catshelterservice.exceptions.NoSuchCatException;
 import com.example.catshelterservice.models.Cat;
 import com.example.catshelterservice.models.User;
 import com.example.catshelterservice.services.CatServiceImpl;
+import com.example.catshelterservice.services.DonateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,21 +24,27 @@ public class CatController {
     @Autowired
     private CatServiceImpl service;
 
+    @Autowired
+    private DonateService donateService;
+
     @GetMapping("/cats")
-    public Page<Cat> getAllCats(@RequestParam String search, @RequestParam int page, @RequestParam int limit) {
-        return service.getCards(search, page, limit);
+    public Page<CatDTO> getAllCats(@RequestParam String search, @RequestParam int page, @RequestParam int limit, @AuthenticationPrincipal User user) {
+        return service.getCards(search, page, limit, user);
     }
 
     @PostMapping("/cats")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public CatDTO postCat(@RequestBody Cat cat){
-        return new CatDTO(service.createCat(cat), 0L, 0L, false);
+    public CatDTO postCat(@RequestBody CatCreateDTO cat) throws FailedSavingException {
+        return new CatDTO(service.createCat(cat), 0L, 0L, false, cat.getImage());
     }
 
     @GetMapping("/cats/{id}")
     public CatDTO getCat(@PathVariable long id, @AuthenticationPrincipal User user) throws Exception {
         Cat cat = service.getCat(id);
-        return new CatDTO(cat, (long) cat.getUsers().size(), 0L, cat.getUsers().contains(user));
+
+        return new CatDTO(cat, (long) cat.getUsers().size(),
+                            user == null ? null : donateService.getDonatesAmount(user.getEmail()),
+                            cat.getUsers().contains(user), service.getImage(id));
     }
 
     @DeleteMapping("/cats/{id}")
@@ -47,9 +56,12 @@ public class CatController {
 
     @PutMapping("/cats/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public CatDTO putCat(@PathVariable long id, @RequestBody Cat cat){
-        Cat updateCat = service.updateCat(id, cat);
-        return new CatDTO(updateCat, (long) updateCat.getUsers().size(), 0L, false);
+    public CatDTO putCat(@PathVariable long id, @RequestBody CatCreateDTO cat, @AuthenticationPrincipal User user){
+        Cat updateCat = service.updateCat(id, new Cat(cat.getName(), cat.getAge(), cat.getColor(),
+                                                        cat.getSex(), cat.getVaccinations(), cat.getDescription()));
+
+        return new CatDTO(updateCat, (long) updateCat.getUsers().size(), 0L,
+                            updateCat.getUsers().contains(user), cat.getImage());
     }
 
     @PostMapping("/like/{catId}")

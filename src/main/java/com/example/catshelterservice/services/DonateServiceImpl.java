@@ -10,7 +10,6 @@ import com.example.catshelterservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,7 +42,12 @@ public class DonateServiceImpl implements DonateService{
 
     @Override
     public long getDonatesAmount(String email) {
-        return donateRepository.sumByUser_Email(email);
+        if(email == null){
+            return 0L;
+        } else {
+            Long sum = donateRepository.sumByUser_Email(email);
+            return sum == null ? 0L : sum;
+        }
     }
 
     @Override
