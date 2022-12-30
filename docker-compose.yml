@@ -1,6 +1,11 @@
 version: "3.3"
 
 services:
+  nginx-front:
+    image: nginx:1.17.8
+    volumes:
+    - C:/Users/maria/Downloads/spring-boot-jwt-without-JPA/cat-home
+
   mysqldb:
     image: mysql:5.7
     restart: unless-stopped

@@ -20,6 +20,7 @@ import java.util.Set;
 
 @RestController
 @Slf4j
+@CrossOrigin(origins = "${frontend.endpoint}", allowCredentials = "true")
 public class CatController {
     @Autowired
     private CatServiceImpl service;
@@ -28,13 +29,14 @@ public class CatController {
     private DonateService donateService;
 
     @GetMapping("/cats")
-    public Page<CatDTO> getAllCats(@RequestParam String search, @RequestParam int page, @RequestParam int limit, @AuthenticationPrincipal User user) {
-        return service.getCards(search, page, limit, user);
+    public Page<CatDTO> getAllCats(@RequestParam(required = false) String search, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer limit, @AuthenticationPrincipal User user) {
+        return service.getCards("name", 0, 20, user);
     }
 
     @PostMapping("/cats")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public CatDTO postCat(@RequestBody CatCreateDTO cat) throws FailedSavingException {
+        log.info("{}", cat);
         return new CatDTO(service.createCat(cat), 0L, 0L, false, cat.getImage());
     }
 
@@ -43,7 +45,7 @@ public class CatController {
         Cat cat = service.getCat(id);
 
         return new CatDTO(cat, (long) cat.getUsers().size(),
-                            user == null ? null : donateService.getDonatesAmount(user.getEmail()),
+                            donateService.getDonatesAmountByCat(id),
                             cat.getUsers().contains(user), service.getImage(id));
     }
 

@@ -51,6 +51,12 @@ public class DonateServiceImpl implements DonateService{
     }
 
     @Override
+    public long getDonatesAmountByCat(Long catId) {
+        Long sum = donateRepository.sumByCat(catId);
+        return sum == null ? 0L : sum;
+    }
+
+    @Override
     public List<UserAmount> getRating(int page) {
         return donateRepository.getRatingList(PageRequest.of(page, LIMIT));
     }

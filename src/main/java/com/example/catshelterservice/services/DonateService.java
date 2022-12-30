@@ -10,6 +10,9 @@ public interface DonateService {
     Donate createDonate(String username, long catId, long value);
     Page<Donate> getDonates(String username, int page);
     long getDonatesAmount(String username);
+
+    long getDonatesAmountByCat(Long catId);
+
     List<UserAmount> getRating(int page);
     List<UserAmount> getRatingByCat(long catId, int page);
 }

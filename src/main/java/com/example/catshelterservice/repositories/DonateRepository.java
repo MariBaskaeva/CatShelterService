@@ -25,4 +25,7 @@ public interface DonateRepository extends PagingAndSortingRepository<Donate, Lon
 
     @Query("select sum(d.value) as s from Donate d where d.user.email = :email")
     Long sumByUser_Email(String email);
+
+    @Query("select sum(d.value) as s from Donate d where d.cat.id = :id")
+    Long sumByCat(Long id);
 }

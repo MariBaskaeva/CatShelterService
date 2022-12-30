@@ -39,6 +39,14 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.save(booking);
     }
 
+    public Booking.Status getStatus(Long catId, User user){
+        Optional<Booking> booking = bookingRepository.getBookingByUserAndCat_Id(user, catId);
+        if (booking.isEmpty())
+            return null;
+
+        return booking.get().getStatus();
+    }
+
     @Override
     public Page<Booking> getBookings(int page) {
         return bookingRepository.findAll(PageRequest.of(page, LIMIT));

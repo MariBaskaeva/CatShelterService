@@ -1,6 +1,7 @@
 package com.example.catshelterservice.repositories;
 
 import com.example.catshelterservice.models.Booking;
+import com.example.catshelterservice.models.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
@@ -15,4 +16,5 @@ public interface BookingRepository extends PagingAndSortingRepository<Booking, L
     Optional<Booking> findById(Long id);
     Booking save(Booking booking);
     void deleteById(Long bookingId);
+    Optional<Booking> getBookingByUserAndCat_Id(User user, Long id);
 }

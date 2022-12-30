@@ -11,6 +11,7 @@ import java.security.Principal;
 
 @RestController
 @Validated
+@CrossOrigin(origins = "${frontend.endpoint}", allowCredentials = "true")
 public class DonateController {
     @Autowired
     private DonateServiceImpl service;
@@ -21,8 +22,8 @@ public class DonateController {
     }
 
     @GetMapping("/donate")
-    private ResponseEntity<?> donateGet(@RequestParam int page, Principal principal) {
-        return ResponseEntity.ok(service.getDonates(principal.getName(), page));
+    private ResponseEntity<?> donateGet(@RequestParam(required = false) Integer page, Principal principal) {
+        return ResponseEntity.ok(service.getDonates(principal.getName(), 0));
     }
 
     @GetMapping("/donate/amount")
@@ -31,11 +32,11 @@ public class DonateController {
     }
 
     @GetMapping("/rating")
-    private ResponseEntity<?> ratingGet(@RequestParam int page){
-        return ResponseEntity.ok(service.getRating(page));
+    private ResponseEntity<?> ratingGet(@RequestParam(required = false) Integer page){
+        return ResponseEntity.ok(service.getRating(0));
     }
     @GetMapping("/rating/{catId}")
-    private ResponseEntity<?> ratingGetByCat(@RequestParam int page, @PathVariable long catId){
-        return ResponseEntity.ok(service.getRatingByCat(catId, page));
+    private ResponseEntity<?> ratingGetByCat(@RequestParam(required = false) Integer page, @PathVariable long catId){
+        return ResponseEntity.ok(service.getRatingByCat(catId, 0));
     }
 }
